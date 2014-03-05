@@ -1,0 +1,214 @@
+<html>
+<head>
+    <link href="bootstrap.css" media="screen" rel="stylesheet" type="text/css">
+    <style>
+
+        .header {
+            background: #0092CC;
+        }
+
+        .header .light {
+            color: #ABDCF0;
+        }
+
+        .header input {
+            background: none;
+            color: white;
+            border: none;
+            display: block;
+            cursor: none;
+
+        }
+
+        .header .times input {
+            text-align: right;
+        }
+
+        .header .times, .header .long-date {
+            padding: 15px;
+        }
+
+        .main-body {
+            background: #34AADA;
+            padding: 10px;
+            color: #B2DEF1;
+        }
+
+        .main-body input {
+            width: 100%;
+            border: none;
+            padding: 5px;
+            color: #0092CC;
+        }
+
+        .main-body .info {
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+    </style>
+    <script type='text/javascript' src='zepto.js' charset='utf-8'></script>
+    <script type='text/javascript' src='moment.js' charset='utf-8'></script>
+    <script type='text/javascript'>
+        $(function () {
+
+            updateViews(moment(),'all');
+
+            $('#epoch_time').bind("change paste keyup", function () {
+
+                var epoch_time = $('#epoch_time').val();
+
+                if (epoch_time == '') {
+                    return;
+                }
+
+                var intRegex = /^\d+$/;
+                if (!intRegex.test(epoch_time)) {
+                    momentObject = moment();
+                } else {
+                    momentObject = moment.unix(epoch_time);
+                }
+
+                updateViews(momentObject,'all');
+
+            });
+
+            $('.details').bind("change paste keyup", function () {
+
+
+                console.log(self);
+
+                var day = $('#day').val();
+                var month = $('#month').val();
+                var year = $('#year').val();
+                var hour = $('#hour').val();
+                var min = $('#min').val();
+                var sec = $('#sec').val();
+
+                var momentString = year + '-' + month + '-' + day + '-' + hour + ':' + min + ':' + sec;
+                var momentObject = moment(momentString, 'YYYY-MM-DD-H:mm:ss');
+
+                updateViews(momentObject,'epoch_time');
+
+            });
+
+        });
+
+        function updateViews(momentObject, whichInputs) {
+
+            if (whichInputs == 'all' || whichInputs == 'epoch_time') {
+                $('#epoch_time').val(momentObject.unix());
+            }
+
+            if (whichInputs == 'all' || whichInputs == 'details') {
+
+                $('#day').val(momentObject.format('DD'));
+                $('#month').val(momentObject.format('MM'));
+                $('#year').val(momentObject.format('YYYY'));
+                $('#hour').val(momentObject.format('H'));
+                $('#min').val(momentObject.format('mm'));
+                $('#sec').val(momentObject.format('ss'));
+            }
+
+            $('#long-date').val(momentObject.format('dddd, MMMM Do, YYYY'));
+            $('#diff-for-humans').val('3 hours ago');
+            $('#military-time').val(momentObject.format('H:mm:ss'));
+            $('#local-time').val(momentObject.format('h:mm A'));
+
+            showMessage('* copied to clipboard');
+
+        }
+
+        function showMessage(message) {
+
+
+            $('#current-status').html(message);
+            setTimeout(function () {
+                $('#current-status').hide(function () {
+                    $('#current-status').html('');
+                    $('#current-status').show();
+                })
+            }, 3000);
+        }
+
+    </script>
+
+</head>
+
+<body>
+
+<div class="header row-fluid">
+    <div class="long-date span8">
+        <input id="long-date" disabled="disabled" value=""/>
+        <input id="diff-for-humans" class="light" disabled="disabled" value=""/>
+    </div>
+    <div class="times span4 text-right">
+        <div class="row-fluid">
+            <input class="pull-right" id="military-time" value=""
+                   disabled="disabled"/>
+        </div>
+        <div class="row-fluid">
+            <input class="pull-right light" id="local-time" value=""
+                   disabled="disabled"/>
+        </div>
+
+    </div>
+</div>
+<div class="main-body">
+    <div class="levers row-fluid">
+
+        <div class="span2">
+            <label for="month"> mon </label>
+            <input class="details" id="month" value="">
+        </div>
+
+        <div class="span2">
+            <label for="day"> day </label>
+            <input class="details" id="day" value="">
+        </div>
+
+        <div class="span2">
+            <label for="year"> year </label>
+            <input class="details" id="year" value="">
+        </div>
+
+        <div class="span2">
+            <label for="hour"> hour </label>
+            <input class="details" id="hour" value="">
+        </div>
+
+        <div class="span2">
+            <label for="min"> min </label>
+            <input class="details" id="min" value="">
+        </div>
+
+        <div class="span2">
+            <label for="sec"> sec </label>
+            <input class="details" id="sec" value="">
+        </div>
+
+    </div>
+
+    <div class=" row-fluid current-epoch-time">
+        <div class="span12">
+            <label>epoch time</label>
+            <input id="epoch_time" value="">
+        </div>
+    </div>
+
+    <div class="row-fluid info">
+        <div class="span6">
+
+        <span id="current-status">
+
+        </span>
+        </div>
+        <div class="span6 text-right">
+            <a href="http://www.willwashburn.com">willwashburn.com</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
